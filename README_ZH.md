@@ -24,16 +24,63 @@
 [Ant Design of Vue]: https://github.com/vueComponent/ant-design-vue
 [LuCI2]: https://git.openwrt.org/?p=project/luci2/ui.git
 [json-rpc]: https://www.jsonrpc.org/
-[ubus]: https://wiki.openwrt.org/doc/techref/ubus
-[uhttpd-mod-ubus]: https://wiki.openwrt.org/doc/techref/ubus#access_to_ubus_over_http
 
 ![](/demo-zh.gif)
 
+![](/diagram.png)
+
 OpenWrt后台管理界面，使用[vue.js]和[Ant Design of Vue]实现，灵感来自于[LuCI2]。
 
-oui使用[json-rpc]和OpenWrt子系统通信。通过[json-rpc]调用[ubus]。通过[ubus]存取各种系统数据(通过[uhttpd-mod-ubus]提供基于HTTP的接口API)。
+Oui使用[json-rpc]和OpenWrt子系统通信。
 
-![](/docs/.vuepress/public/architecture.png)
+Oui特别适合用于企业定制开发。
+
+# 如何编译
+## 添加 feeds
+
+	echo "src-git oui https://github.com/zhaojh329/oui.git" >> feeds.conf.default
+	./scripts/feeds update oui
+	./scripts/feeds install -a -p oui
+
+## 配置
+
+	Oui  --->
+		Applications  --->
+			<*> oui-app-admin............................................. Administration
+			<*> oui-app-diagnostics.......................................... Diagnostics
+			<*> oui-app-firewall................................................ Firewall
+			<*> oui-app-home.......................................... Built-in home page
+			<*> oui-app-interfaces.................................... Network Interfaces
+			<*> oui-app-system............................................ System Setting
+			<*> oui-app-upgrade......................................... Backup / Upgrade
+			<*> oui-app-wireless................................................ Wireless
+		-*- oui-bwm........................................ Bandwidth Monitor for oui
+		-*- oui-httpd................................................ Oui rpc backend
+		-*- oui-ui-core.................................................. Oui ui core
+
+## 编译
+
+	make V=s
+
+
+# Jsonrpc 示例
+## 通用
+
+	{
+		"jsonrpc": "2.0",
+		"id": 27,
+		"method": "call",
+		"params": ["sid", "network", "dhcp_leases", {}]
+	}
+
+## Ubus
+
+	{
+		"jsonrpc": "2.0",
+		"id": 7,
+		"method": "call",
+		"params": ["sid", "ubus", "call", { "object": "system", "method": "board" }]
+	}
 
 # 用户
 
