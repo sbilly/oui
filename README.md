@@ -21,17 +21,62 @@
 [Ant Design of Vue]: https://github.com/vueComponent/ant-design-vue
 [LuCI2]: https://git.openwrt.org/?p=project/luci2/ui.git
 [json-rpc]: https://www.jsonrpc.org/
-[ubus]: https://wiki.openwrt.org/doc/techref/ubus
-[uhttpd-mod-ubus]: https://wiki.openwrt.org/doc/techref/ubus#access_to_ubus_over_http
 
 ![](/demo.gif)
 
+![](/diagram.png)
+
 OpenWrt web user interface implemented in [vue.js] and [Ant Design of Vue], inspired by [LuCI2].
 
-oui uses [json-rpc] to communicate with OpenWrt subsystems. Call [ubus] via [json-rpc].
-To access any kind of system data through [ubus] with [json-rpc](with the help of [uhttpd-mod-ubus] to provide HTTP based API).
+Oui uses [json-rpc] to communicate with OpenWrt subsystems.
 
-![](/docs/.vuepress/public/architecture.png)
+Oui is especially suitable for enterprise custom development.
+
+# How to build
+## Add feeds
+
+	echo "src-git oui https://github.com/zhaojh329/oui.git" >> feeds.conf.default
+	./scripts/feeds update oui
+	./scripts/feeds install -a -p oui
+
+## Configure
+
+	Oui  --->
+		Applications  --->
+			<*> oui-app-admin............................................. Administration
+			<*> oui-app-diagnostics.......................................... Diagnostics
+			<*> oui-app-firewall................................................ Firewall
+			<*> oui-app-home.......................................... Built-in home page
+			<*> oui-app-interfaces.................................... Network Interfaces
+			<*> oui-app-system............................................ System Setting
+			<*> oui-app-upgrade......................................... Backup / Upgrade
+			<*> oui-app-wireless................................................ Wireless
+		-*- oui-bwm........................................ Bandwidth Monitor for oui
+		-*- oui-httpd................................................ Oui rpc backend
+		-*- oui-ui-core.................................................. Oui ui core
+	
+## Compile
+
+	make V=s
+
+# Jsonrpc example
+## General
+
+	{
+		"jsonrpc": "2.0",
+		"id": 27,
+		"method": "call",
+		"params": ["sid", "network", "dhcp_leases", {}]
+	}
+
+## Ubus
+
+	{
+		"jsonrpc": "2.0",
+		"id": 7,
+		"method": "call",
+		"params": ["sid", "ubus", "call", { "object": "system", "method": "board" }]
+	}
 
 # In Production
 
